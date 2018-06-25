@@ -1,0 +1,48 @@
+@using DotNetNuke.Common
+
+@{
+    var db = Database.Open("SiteSqlServer");
+    var storedProc = String.Format("{0}GSN_GetUsers", DotNetNuke.Data.DataProvider.Instance().ObjectQualifier);
+    var portalId = @Dnn.Portal.PortalId;
+    // or var param2 = 15247 (no quotes necessary if param is an integer datatype)
+    var procRows = db.Query("EXEC " + storedProc + " @PortalId=@0", portalId );
+}
+
+<!-- Hoverable Rows -->
+<div class="table-responsive" >
+  <table id="example" class="table table-striped table-bordered">
+      <thead>
+          <tr>
+              <th>Event Date</th>
+              <th>Event Title</th>
+              <th>Venue</th>
+              <th>Attendee Count</th>
+              <th>Actions</th>
+          </tr>
+      </thead>
+      <tbody>
+          @foreach( var procRow in procRows )
+          {
+          <tr>
+              <td>@procRow.EventTimeBegin.ToString("dd MMM yyyy")</td>
+              <td>@procRow.EventName</td>
+              <td>@procRow.LocationName</td>
+              <td>@procRow.AttendeeCount</td>
+              <td>
+                  <a href="@Globals.NavigateURL()" title="Edit Event" class="btn btn-info btn-sm">
+                      <i class="fa fa-pencil"></i> 
+                  </a>
+
+                  <a href="https://geraldncube.co.uk/Profile/Events-Manager/Attendance-Register.aspx?id=@procRow.EventID.ToString()" title="View attendees" class="btn btn-success btn-sm">
+                      <i class="fa fa-users"></i> 
+                  </a>
+              </td>
+          </tr>
+          }
+      </tbody>
+  </table>
+</div>
+<!-- End Hoverable Rows -->
+
+
+
